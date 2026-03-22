@@ -1,11 +1,12 @@
 <?php
 // Shared database bootstrap for the project.
 
-$DB_HOST = 'localhost';
-$DB_USER = 'root';
-$DB_PASS = '';
+$DB_HOST = 'duckrundb1.c944ysk6m0y8.ap-south-1.rds.amazonaws.com';
+$DB_USER = 'admin';
+$DB_PASS = 'Duckrun26_';
 $DB_NAME = 'mario_game';
 $table = 'manage';
+
 
 $conn = new mysqli($DB_HOST, $DB_USER, $DB_PASS);
 if ($conn->connect_error) {
