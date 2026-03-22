@@ -30,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             if ($insert->execute()) {
                 // Registration successful - redirect to login page
-                header('Location: login.php');
+                header('Location: index.php');
                 exit;
             } else {
                 $error = 'Registration failed: ' . $insert->error;
@@ -148,7 +148,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </form>
 
     <p class="auth-link">
-        Already have an account? <a href="login.php">Login</a>
+        Already have an account? <a href="index.php">Login</a>
     </p>
 </div>
 
