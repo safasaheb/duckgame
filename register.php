@@ -48,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     body {
         margin: 0;
         height: 100vh;
-        background: url('assets/Summer8.png') no-repeat center center;
+        background: url('assets/summer8.png') no-repeat center center;
         background-size: cover;
         font-family: Arial, sans-serif;
         display: flex;
