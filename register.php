@@ -59,8 +59,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     .box {
         box-sizing: border-box;
         background: #fff;
-        padding: 25px 30px;
-        width: 320px;
+        padding: 40px 46px;
+        width: min(460px, 92vw);
         border-radius: 10px;
         text-align: center;
         box-shadow: 0 8px 20px rgba(0,0,0,0.3);
@@ -130,6 +130,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     .auth-link a:hover {
         text-decoration: underline;
+    }
+
+    @media (max-width: 768px) {
+        .box {
+            padding: 44px 28px;
+            width: 94vw;
+            max-width: 520px;
+        }
+
+        h2 {
+            font-size: 34px;
+            margin-bottom: 24px;
+        }
+
+        input,
+        button {
+            padding: 14px;
+            font-size: 16px;
+        }
     }
 </style>
 </head>

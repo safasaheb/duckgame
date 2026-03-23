@@ -68,7 +68,7 @@ if ($currentUser !== '' && strtolower($currentUser) !== 'admin') {
         position: absolute;
         bottom: 0;
         width: 100%;
-        height: 120px;
+        height: var(--ground-height, 220px);
         background: #8e5a2b;
         border-top: 8px solid #5d3b1a;
         z-index: 2;
@@ -77,7 +77,7 @@ if ($currentUser !== '' && strtolower($currentUser) !== 'admin') {
     /* Grass container (tiles are created via JS) */
     #grass {
         position: absolute;
-        bottom: 0; /* container sits at bottom; tiles use bottom:120px to align with ground */
+        bottom: 0; /* container sits at bottom; tiles align to the dynamic ground height */
         left: 0;
         width: 100%;
         height: 20px; /* grass height */
@@ -118,10 +118,10 @@ if ($currentUser !== '' && strtolower($currentUser) !== 'admin') {
     /* Player character (stands on ground) */
     #player {
         position: absolute;
-        bottom: 120px; /* same as ground height */
+        bottom: var(--ground-height, 220px); /* same as ground height */
         left: 120px;
-        width: 120px;
-        height: 120px;
+        width: 138px;
+        height: 138px;
         background: url('assets/Mushroom-Run.png') no-repeat center;
         background-size: contain;
         z-index: 4;
@@ -146,8 +146,8 @@ if ($currentUser !== '' && strtolower($currentUser) !== 'admin') {
         position: absolute;
         right: 20px;
         bottom: -20px;
-        width: 120px;
-        height: 120px;
+        width: 170px;
+        height: 170px;
         z-index: 25;
         display: inline-block;
         cursor: pointer;
@@ -161,6 +161,68 @@ if ($currentUser !== '' && strtolower($currentUser) !== 'admin') {
         height: 100%;
         object-fit: contain;
         display: block;
+    }
+
+    #jump-btn {
+        position: absolute;
+        left: 70px;
+        bottom: 20px;
+        width: 105px;
+        height: 105px;
+        z-index: 25;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 4px solid rgba(255,255,255,0.9);
+        border-radius: 999px;
+        background: #eed779;
+        color: #fff;
+        font-family: 'Press Start 2P', cursive;
+        font-size: 18px;
+        line-height: 1;
+        cursor: pointer;
+        user-select: none;
+        -webkit-user-select: none;
+        -webkit-tap-highlight-color: transparent;
+        outline: none;
+        touch-action: manipulation;
+        box-shadow: 0 10px 24px rgba(0,0,0,0.3);
+    }
+
+    #jump-btn:active {
+        transform: scale(0.96);
+    }
+
+    #jump-btn:focus,
+    #jump-btn:focus-visible {
+        outline: none;
+        box-shadow: 0 10px 24px rgba(0,0,0,0.3);
+    }
+
+    @media (max-width: 768px) {
+        #scoreboard {
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        #lives img {
+            width: 48px;
+        }
+
+        #pause-btn {
+            right: 8px;
+            bottom: -6px;
+            width: 92px;
+            height: 92px;
+        }
+
+        #jump-btn {
+            left: 14px;
+            bottom: 18px;
+            width: 92px;
+            height: 92px;
+            font-size: 15px;
+        }
     }
 
     #pausemenu {
@@ -296,6 +358,7 @@ if ($currentUser !== '' && strtolower($currentUser) !== 'admin') {
     <button id="pause-btn" aria-label="Pause game">
         <img src="assets/pausebutton.png" alt="Pause">
     </button>
+    <button id="jump-btn" aria-label="Jump">JUMP</button>
 
     <div id="pausemenu">
         <div class="pause-wrap">
@@ -327,13 +390,14 @@ if ($currentUser !== '' && strtolower($currentUser) !== 'admin') {
         const retryLink = document.getElementById('retry-link');
         const goHomeLink = document.getElementById('go-home-link');
         const pauseBtn = document.getElementById('pause-btn');
+        const jumpBtn = document.getElementById('jump-btn');
         const pauseMenuEl = document.getElementById('pausemenu');
         const continueLink = document.getElementById('continue-link');
         const homeLink = document.getElementById('home-link');
         const pauseCountdownEl = document.getElementById('pause-countdown');
         const scoreEl = document.getElementById('score');
         const highScoreEl = document.getElementById('high-score');
-        if (!game || !player || !spikeContainer || hearts.length === 0 || !gameOverEl || !scoreEl || !highScoreEl || !pauseBtn || !pauseMenuEl || !continueLink || !homeLink || !pauseCountdownEl || !goHomeLink) return;
+        if (!game || !player || !spikeContainer || hearts.length === 0 || !gameOverEl || !scoreEl || !highScoreEl || !pauseBtn || !jumpBtn || !pauseMenuEl || !continueLink || !homeLink || !pauseCountdownEl || !goHomeLink) return;
 
         function syncGameOverButtonWidths(){
             const retryWidth = retryLink.getBoundingClientRect().width;
@@ -389,14 +453,31 @@ if ($currentUser !== '' && strtolower($currentUser) !== 'admin') {
         let jumpQueuedAt = -1;
 
         // world / ground alignment
-        const groundY = 120; // matches #ground height and player standing baseline
+        let groundY = 220;
+        function getGroundHeight(){
+            return Math.max(145, Math.min(240, Math.round(window.innerHeight * 0.25)));
+        }
+
+        function getFelpudoBottom(){
+            return groundY + 125;
+        }
+
+        function syncGroundLayout(){
+            groundY = getGroundHeight();
+            document.documentElement.style.setProperty('--ground-height', groundY + 'px');
+            if (onGround) {
+                player.style.bottom = groundY + 'px';
+            }
+        }
+
+        syncGroundLayout();
+
         // spikes settings
         const tileW = 40, tileH = 40;
         const spikeBuriedPx = 10; // hide the brown base under the ground
         const ravenW = 130, ravenH = 78;
         const ravenGroundOffset = -16; // push raven down to sit on the floor line
         const felpudoW = 120, felpudoH = 60;
-        const felpudoBottom = groundY + 95; // low enough to feel close, high enough to pass under
         const spacing = 420; // base spacing between spikes
         const baseSpeed = 6; // starting speed
         const speedRampPerMs = 0.00015; // gradual speed increase
@@ -463,7 +544,7 @@ if ($currentUser !== '' && strtolower($currentUser) !== 'admin') {
                 el.className = 'felpudo-tile';
                 el.style.width = felpudoW + 'px';
                 el.style.height = felpudoH + 'px';
-                el.style.bottom = felpudoBottom + 'px';
+                el.style.bottom = getFelpudoBottom() + 'px';
                 return;
             }
             el.className = 'spike-tile';
@@ -528,6 +609,11 @@ if ($currentUser !== '' && strtolower($currentUser) !== 'admin') {
                 queueJump();
             }
         });
+
+        function handleJumpButtonPress(e){
+            e.preventDefault();
+            queueJump();
+        }
 
         // checks if player collides with a obstacle
         function rectsOverlap(a,b){
@@ -699,6 +785,10 @@ if ($currentUser !== '' && strtolower($currentUser) !== 'admin') {
             });
         }
 
+        if (jumpBtn) {
+            jumpBtn.addEventListener('pointerdown', handleJumpButtonPress);
+        }
+
         if (continueLink) {
             continueLink.addEventListener('click', function(e){
                 e.preventDefault();
@@ -761,15 +851,25 @@ if ($currentUser !== '' && strtolower($currentUser) !== 'admin') {
                             bottom: r.bottom - insetY
                         };
                     }
+                    function insetRectEdges(r, insetLeft, insetTop, insetRight, insetBottom){
+                        return {
+                            left: r.left + insetLeft,
+                            top: r.top + insetTop,
+                            right: r.right - insetRight,
+                            bottom: r.bottom - insetBottom
+                        };
+                    }
                     const pr0 = player.getBoundingClientRect();
                     const sr0 = el.getBoundingClientRect();
                     // tighten hitboxes so only actual contact counts
-                    const playerInset = 18; // reduce player's collision box
+                    const playerInset = 12; // larger sprite still needs a responsive hitbox
                     const obstacleType = el.dataset.type || 'spike';
-                    const obstacleInset = obstacleType === 'felpudo' ? 8 : (obstacleType === 'raven' ? 10 : 12);
+                    const obstacleInset = obstacleType === 'felpudo' ? 6 : (obstacleType === 'raven' ? 8 : 6);
                     const pr = insetRect(pr0, playerInset);
                     const sr = obstacleType === 'raven'
-                        ? insetRectXY(sr0, 36, 16)
+                        ? insetRectEdges(sr0, 42, 18, 42, 18)
+                        : obstacleType === 'felpudo'
+                        ? insetRectXY(sr0, 10, 18)
                         : insetRect(sr0, obstacleInset);
                     if (!invincible && rectsOverlap(pr, sr)) {
                         loseLife(el);
@@ -806,6 +906,7 @@ if ($currentUser !== '' && strtolower($currentUser) !== 'admin') {
         requestAnimationFrame(step);
 
         window.addEventListener('resize', ()=>{
+            syncGroundLayout();
             createTiles();
             syncGameOverButtonWidths();
         });

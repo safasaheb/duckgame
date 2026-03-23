@@ -34,12 +34,17 @@ include 'assets/character.php';
         background: url('assets/origbig.png') no-repeat center center;
         background-size: cover;
     }
+
+    :root {
+        --ground-height: clamp(145px, 25vh, 240px);
+    }
+
     /* Ground */
     .ground {
         position: absolute;
         bottom: 0;
         width: 100%;
-        height: 120px;
+        height: var(--ground-height);
         background: #8e5a2b;
         border-top: 8px solid #5d3b1a;
     }
@@ -123,10 +128,10 @@ include 'assets/character.php';
     /* Character */
     .character {
         position: absolute;
-        bottom: 120px;
+        bottom: var(--ground-height);
         left: 120px;
-        width: 120px;
-        height: 120px;
+        width: 138px;
+        height: 138px;
         background-size: contain;
         background-repeat: no-repeat;
         background-position: bottom center;

@@ -64,7 +64,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             margin: 0;
             font-family: 'Trebuchet MS', Arial, sans-serif;
             background: url('assets/loginbg.png') no-repeat center center;
-            background-size: 100% 100%;
+            background-size: cover;
             height: 100vh;
             overflow: hidden;
         }
@@ -76,8 +76,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             left: 50%;
             transform: translate(-50%, -50%);
             background: rgba(255,255,255,0.95);
-            padding: 25px 30px;
-            width: 320px;
+            padding: 40px 46px;
+            width: min(460px, 92vw);
             border-radius: 10px;
             text-align: center;
             box-shadow: 0 8px 20px rgba(0,0,0,0.3);
@@ -121,6 +121,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             color: #c0392b;
             font-size: 14px;
             margin-bottom: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .login-box {
+                padding: 44px 28px;
+                width: 94vw;
+                max-width: 520px;
+            }
+
+            .title {
+                font-size: 34px;
+                margin-bottom: 24px;
+            }
+
+            input,
+            button {
+                padding: 14px;
+                font-size: 16px;
+            }
         }
 
     </style>
